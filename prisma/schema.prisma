@@ -1,0 +1,157 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 사용자 (SaaS를 찾는 고객)
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  company   String?
+  position  String?
+  phone     String?
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 견적 요청
+  quoteRequests QuoteRequest[]
+  
+  @@map("users")
+}
+
+// SaaS 공급업체
+model Vendor {
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  company     String
+  website     String?
+  description String?
+  logo        String?
+  verified    Boolean  @default(false)
+  rating      Float    @default(0)
+  reviewCount Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 제공하는 SaaS 서비스들
+  services Service[]
+  // 견적 제안
+  quotes   Quote[]
+  
+  @@map("vendors")
+}
+
+// SaaS 서비스 카테고리
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // 이 카테고리의 서비스들
+  services Service[]
+  // 이 카테고리에 대한 견적 요청들
+  quoteRequests QuoteRequest[]
+  
+  @@map("categories")
+}
+
+// SaaS 서비스
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  features    String[] // JSON array로 저장
+  pricing     Json?    // 가격 정보를 JSON으로 저장
+  website     String?
+  logo        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 관계
+  vendorId   String
+  vendor     Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  // 견적 제안에서 사용
+  quotes Quote[]
+  
+  @@map("services")
+}
+
+// 견적 요청
+model QuoteRequest {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  budget      String?  // 예산 범위
+  timeline    String?  // 도입 일정
+  company     String?
+  industry    String?
+  employees   String?  // 직원 수 범위
+  requirements Json    // 상세 요구사항을 JSON으로 저장
+  status      RequestStatus @default(OPEN)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 관계
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  // 받은 견적들
+  quotes Quote[]
+  
+  @@map("quote_requests")
+}
+
+// 견적 제안
+model Quote {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  price       String
+  proposal    Json     // 상세 제안 내용
+  validUntil  DateTime?
+  status      QuoteStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 관계
+  vendorId       String
+  vendor         Vendor       @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  quoteRequestId String
+  quoteRequest   QuoteRequest @relation(fields: [quoteRequestId], references: [id], onDelete: Cascade)
+  serviceId      String
+  service        Service      @relation(fields: [serviceId], references: [id])
+  
+  @@map("quotes")
+}
+
+enum RequestStatus {
+  OPEN
+  IN_REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+enum QuoteStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  EXPIRED
+} 
