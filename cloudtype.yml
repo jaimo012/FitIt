@@ -1,12 +1,16 @@
-name: fitit
+name: fitit-saas-platform
 services:
-  - name: app
+  - name: web
     type: web
     root_dir: ./
-    install: npm ci
-    build: npm run build
+    install: |
+      npm install
+    build: |
+      npm run build
     start: npm start
     port: 3000
+    health_check: /
+    timeout: 300
     envs:
       - key: NODE_ENV
         value: production
@@ -15,4 +19,10 @@ services:
       - key: NEXTAUTH_SECRET
         value: $NEXTAUTH_SECRET
       - key: NEXTAUTH_URL
-        value: $NEXTAUTH_URL 
+        value: $NEXTAUTH_URL
+    resources:
+      cpu: 1
+      memory: 1Gi
+    auto_scaling:
+      min_replicas: 1
+      max_replicas: 3 
