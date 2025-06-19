@@ -1,7 +1,8 @@
 {
   "name": "fitit",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "description": "맞춤형 SaaS 비교·견적 플랫폼",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,7 +11,8 @@
     "type-check": "tsc --noEmit",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "next": "14.2.0",
@@ -40,6 +42,20 @@
     "tailwindcss": "^3.4.1"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "keywords": [
+    "SaaS",
+    "비교플랫폼",
+    "견적플랫폼",
+    "B2B",
+    "소프트웨어",
+    "핏잇",
+    "Fit-!T"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jaimo012/FitIt.git"
   }
 } 
