@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'Fit-!T Team' }],
   viewport: 'width=device-width, initial-scale=1',
+
   openGraph: {
     title: 'Fit-!T - 맞춤형 SaaS 비교 플랫폼',
     description: '복잡한 비교는 그만, 핏잇이 직접 제안합니다',
