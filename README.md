@@ -24,9 +24,10 @@ Fit-!T는 사용자가 복잡한 SaaS 시장에서 자신에게 최적화된 서
 
 - **Frontend**: Next.js 14, React 18, TypeScript
 - **Styling**: Tailwind CSS (브랜드 컬러 적용)
-- **Database**: PostgreSQL, Prisma ORM
+- **Database**: Neon Serverless PostgreSQL, Prisma ORM
 - **Authentication**: NextAuth.js
 - **Deployment**: CloudType
+- **Cloud Database**: Neon (Serverless PostgreSQL)
 
 ## 🎨 브랜드 가이드
 
@@ -54,13 +55,24 @@ npm install
 ### 3. 환경변수 설정
 ```bash
 cp .env.example .env.local
-# .env.local 파일에 실제 값들을 입력하세요
+# .env.local 파일에 Neon 데이터베이스 연결 문자열을 설정하세요
 ```
 
-### 4. 데이터베이스 설정
+**환경변수 예시 (.env.local)**:
 ```bash
+DATABASE_URL="postgresql://username:password@ep-xxxxx.ap-southeast-1.aws.neon.tech/dbname?sslmode=require"
+```
+
+### 4. 데이터베이스 설정 (Neon)
+```bash
+# Prisma 클라이언트 생성
 npm run db:generate
+
+# 데이터베이스 스키마 적용
 npm run db:push
+
+# 데이터베이스 확인 (선택사항)
+npm run db:studio
 ```
 
 ### 5. 개발 서버 실행
@@ -99,9 +111,37 @@ fitit/
 4. 자동 배포 실행
 
 ### 환경변수 (CloudType)
-- `DATABASE_URL`: PostgreSQL 연결 URL
-- `NEXTAUTH_SECRET`: NextAuth.js 시크릿 키
+- `DATABASE_URL`: Neon PostgreSQL 연결 URL (Pooled Connection 권장)
+- `NEXTAUTH_SECRET`: NextAuth.js 시크릿 키  
 - `NEXTAUTH_URL`: 배포된 애플리케이션 URL
+
+## 🗄️ 데이터베이스 (Neon)
+
+### Neon 설정 방법
+1. [Neon.tech](https://neon.tech) 가입 및 프로젝트 생성
+2. Connection Details에서 **Pooled connection** 활성화
+3. 연결 문자열을 환경변수에 설정
+4. `npm run db:push`로 스키마 적용
+
+### 데이터베이스 스키마
+- **Users**: 사용자 정보 (SaaS를 찾는 고객)
+- **Vendors**: SaaS 공급업체 정보
+- **Categories**: SaaS 서비스 카테고리
+- **Services**: SaaS 서비스 상세 정보
+- **QuoteRequests**: 견적 요청
+- **Quotes**: 견적 제안
+
+### 주요 명령어
+```bash
+# 스키마 동기화
+npm run db:push
+
+# 데이터베이스 시각화
+npm run db:studio
+
+# Prisma 클라이언트 재생성
+npm run db:generate
+```
 
 ## 🤝 기여하기
 
